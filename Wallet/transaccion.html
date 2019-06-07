@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<title>Wallet</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="estilos.css">
+	</head>
+	<body>
+	
+
+		<header class="row" id="cabecera">
+			<h1 class="text-center">Wallet</h1>		
+		</header>
+		<div>
+            <input type="submit" name="" id="submit" >
+			<input type="text" name="" id="add1" placeholder="wallet 1">
+			<input type="text" name="" id="valor" placeholder="monto">
+			<input type="text" name="" id="add2" placeholder="Wallet 2">
+			<input type="text" name="" id="servidor" placeholder="direccion web del servidor">
+		</div>
+		<h2>Historial de transacciones</h2>
+		<section class="container">
+			<section class="row" id="cuerpo">
+				<div id="data_productos">
+				</div>
+				<div id="data_enviada">
+				</div>
+			</section>
+		</section>
+		
+
+	
+
+		
+		<script
+		src="https://code.jquery.com/jquery-2.2.4.min.js"
+		integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+		crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		
+		<script>
+			document.getElementById('submit').addEventListener('click',$(function(){
+				listar();
+				guardar();
+			}));
+			function listar(){
+				__ajax("listar.php", "")
+				.done(function(info){
+		
+					console.log(info);
+					var productos = JSON.parse(info);
+					var html ="";
+					//console.log(productos);
+					for(var i in productos.data){
+					//console.log(productos.data[i].producto);
+					//console.log(productos.data[i].precio);
+					html+= `<p>Address 1: <b>${productos.data[i].address1}</b></p>
+							<p>Precio: ${productos.data[i].amount}</p>
+							<p>Addres 2: ${productos.data[i].address2}</p> </br>`
+							
+					}
+					$("#data_productos").html(html);
+				});
+			}
+
+			function datos(){
+				var data = [];
+				var add1=document.getElementById("add1").value;
+				var valor=document.getElementById("valor").value;
+				var add2=document.getElementById("add2").value;
+				data.push(
+				{"address1":add1,"amount":valor,"address2":add2}	
+				);
+				var productos = {"data":data};
+				//console.log(productos);
+				return productos;
+			}
+
+			function guardar(){
+				var json = JSON.stringify( datos());
+				//console.log(datos());
+				console.log(json);
+				var servidor =document.getElementById("servidor").value;
+				__ajax(servidor,{"json": json})
+				.done(function(info){
+				if(info){
+					$("#data_enviada").html(`<h3 class="text-success">Se registro la transaccion</h3>`);
+					listar();
+				}else{
+					$("#data_enviada").html(`<h3 class="text-danger">No se registro la transaccion</h3>`);
+				}
+				//	console.log(info);
+				});
+			}
+
+			function __ajax(url, data){
+				var ajax = $.ajax({
+				"method": "POST",
+				"url" : url,
+				"data": data,
+				})
+				return ajax;
+			}
+		</script>
+	</body>
+</html>
